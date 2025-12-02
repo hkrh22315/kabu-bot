@@ -43,7 +43,7 @@ async def on_ready():
  #bkabu
 @client.tree.command(name="bkabu", description="buy kabu")
 @app_commands.describe(name="銘柄名", price="価格")
-async def bkabu(interaction: discord.Interaction, name: str, price: int):
+async def bkabu(interaction: discord.Interaction, name: str, price: float):
         
         await interaction.response.defer(ephemeral=True)
 
@@ -62,7 +62,7 @@ async def bkabu(interaction: discord.Interaction, name: str, price: int):
  #skabu
 @client.tree.command(name="skabu", description="sell kabu")
 @app_commands.describe(name="銘柄名", price="価格")
-async def skabu(interaction: discord.Interaction, name:str, price: int):
+async def skabu(interaction: discord.Interaction, name:str, price: float):
 
     await interaction.response.defer(ephemeral=True)
 
