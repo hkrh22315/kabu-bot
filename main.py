@@ -52,7 +52,7 @@ async def bkabu(interaction: discord.Interaction, name: str, price: float, amoun
 
         # write to spreadsheet
         try:
-            ws.append_row([date_str, name, price,"buy"])
+            ws.append_row([date_str, name, price,amount,"buy"])
 
             await interaction.followup.send(f"done", ephemeral=True)
         
@@ -71,7 +71,7 @@ async def skabu(interaction: discord.Interaction, name:str, price: float, amount
 
     #write to spreadsheet
     try:
-        ws.append_row([date_str,name,price,"sell"])
+        ws.append_row([date_str,name,price,amount,"sell"])
 
         await interaction.followup.send(f"done",ephemeral=True)
 
