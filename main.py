@@ -47,7 +47,7 @@ async def bkabu(interaction: discord.Interaction, name: str, price: float, amoun
         
         await interaction.response.defer(ephemeral=True)
 
-        date_str = datetime.now(hours=+9).strftime('%Y/%m/%d %H:%M')
+        date_str = datetime.now().strftime('%Y/%m/%d %H:%M')
         user_name = interaction.user.name
 
         # write to spreadsheet
@@ -66,7 +66,7 @@ async def skabu(interaction: discord.Interaction, name:str, price: float, amount
 
     await interaction.response.defer(ephemeral=True)
 
-    date_str = datetime.now(hours=+9).strftime('%Y/%m/%d %H:%M')
+    date_str = datetime.now().strftime('%Y/%m/%d %H:%M')
     user_name = interaction.user.name
 
     #write to spreadsheet
