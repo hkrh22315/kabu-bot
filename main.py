@@ -28,7 +28,7 @@ class MyClient(discord.Client):
         self.check_price_loop.start()
         print("loop started")
     
-    @tasks.loop(minutes=60)
+    @tasks.loop(minutes=1)
     async def check_price_loop(self):
         if not self.is_ready():
             return
