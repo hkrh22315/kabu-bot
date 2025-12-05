@@ -1,9 +1,11 @@
 import discord
 from discord import app_commands
+from discord.ext import tasks
 import os
 import gspread
 from dotenv import load_dotenv
 from datetime import datetime
+import yfinance as yf
 
 # import settings
 load_dotenv()
@@ -23,6 +25,56 @@ class MyClient(discord.Client):
         self.tree.copy_global_to(guild=my_guild)
         await self.tree.sync(guild=my_guild)
 
+        self.check_price_loop.start()
+        print("loop started")
+    
+    @tasks.loop(minutes=60)
+    async def check_price_loop(self):
+        if not self.is_ready():
+            return
+        try:
+            alert_ws = sh.get_worksheet(1)
+            alerts = alert_ws.get_all_values()
+
+            if len(alerts) <= 1:
+                return
+            
+            rows_to_delete = []
+
+            for i, row in enumerate(alerts[1:], start=2):
+                if len(row) < 4:
+                    continue
+
+                user_name,code,target_price, channel_id = row
+
+                ticker = code
+                if code.isdigit(): ticker = f"{code}.T"
+
+                try:
+                    stock = yf.Ticker(ticker)
+                    current_price = stock.fast_info['last_price']
+                    target = float(target_price)
+
+                    if current_price >= target:
+
+                        channel = self.get_channel(int(channel_id))
+                        
+                        if channel:
+                            await channel.send(f"{code} {target}")
+                            print(f"{code}{target}")
+                        
+                        rows_to_delete.append(i)
+
+                except Exception as e:
+                    print(f"Error {code}:{e}")
+            
+            for row_num in sorted(rows_to_delete, reverse=True):
+                alert_ws.delete_rows(row_num)
+        
+        except Exception as e:
+            print(f"Error{e}")
+        
+                    
 client = MyClient()
 
 # set up spreadsheet
@@ -77,6 +129,21 @@ async def skabu(interaction: discord.Interaction, name:str, price: float, amount
 
     except Exception as e:
         await interaction.followup.send(f"Error: {e}",ephemeral=True)
+
+#/set_alert
+@client.tree.command(name="set_alert", description="通知設定")
+@app_commands.describe(code="銘柄", target="価格")
+async def set_alert(interaction: discord.Interaction, code:str, target:float):
+    await interaction.response.defer(ephemeral=True)
+
+    try:
+        alert_ws = sh.get_worksheet(1)
+
+        alert_ws.append_row([interaction.user.name, code, target, str(interaction.channel_id)])
+
+        await interaction.followup.send("done")
+    except Exception as e:
+        await interaction.followup.send(f"Error{e}")
 
 # start bot
 client.run(discord_token)
