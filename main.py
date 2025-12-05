@@ -45,7 +45,7 @@ class MyClient(discord.Client):
                 if len(row) < 4:
                     continue
 
-                user_name,code,target_price, channel_id = row
+                user_id,user_name,code,target_price, channel_id = row
 
                 ticker = code
                 if code.isdigit(): ticker = f"{code}.T"
@@ -60,7 +60,7 @@ class MyClient(discord.Client):
                         channel = self.get_channel(int(channel_id))
                         
                         if channel:
-                            await channel.send(f"{code} {target}")
+                            await channel.send(f"<@{user_id}>{code} {target}")
                             print(f"{code}{target}")
                         
                         rows_to_delete.append(i)
@@ -139,7 +139,7 @@ async def set_alert(interaction: discord.Interaction, code:str, target:float):
     try:
         alert_ws = sh.get_worksheet(1)
 
-        alert_ws.append_row([interaction.user.name, code, target, str(interaction.channel_id)])
+        alert_ws.append_row([str(interaction.user.id),interaction.user.name, code, target, str(interaction.channel_id)])
 
         await interaction.followup.send("done")
     except Exception as e:
