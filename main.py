@@ -48,14 +48,15 @@ class MyClient(discord.Client):
                 user_id,user_name,code,target_price, channel_id = row
 
                 ticker = code
-                if code.isdigit(): ticker = f"{code}.T"
+                if code.isdigit(): 
+                    ticker = f"{code}.T"
 
                 try:
                     stock = yf.Ticker(ticker)
                     current_price = stock.fast_info['last_price']
                     target = float(target_price)
 
-                    if current_price >= target:
+                    if abs(current_price - target) <= 1:
 
                         channel = self.get_channel(int(channel_id))
                         
